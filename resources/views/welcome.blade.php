@@ -13,8 +13,10 @@
         <weather />
     </div>
 
-    <script src="{{ mix('js/manifest.js') }}"></script>
-    <script src="{{ mix('js/vendor.js') }}"></script>
+    @if (config("app.env") == "production")
+        <script src="{{ mix('js/manifest.js') }}"></script>
+        <script src="{{ mix('js/vendor.js') }}"></script>
+    @endif
     <script src="{{ mix('js/app.js') }}"></script>
 </body>
 </html>
