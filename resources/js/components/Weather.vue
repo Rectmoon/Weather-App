@@ -1,5 +1,5 @@
 <template>
-  <div class="text-white mb-8">
+  <div class="weather text-white mb-8 sm:w-10/12 xl:w-3/4">
     <div id="allmap" class="hidden"></div>
     <div class="places-input text-gray-600">
       <input
@@ -9,20 +9,16 @@
         placeholder="请输入位置信息"
         @keyup.enter="handleSearch"
       />
-
-      <div
-        ref="searchResultPanel"
-        style="border:1px solid #C0C0C0;width:150px;height:auto; display:none;"
-      ></div>
     </div>
 
     <div
-      class="weather-container font-sans md:w-128 max-w-lg rounded-lg overflow-hidden bg-purple-900 shadow-lg mt-4"
+      class="weather-container relative font-sans rounded-lg overflow-hidden bg-purple-700 shadow-lg mt-4"
     >
+      <loading v-show="loading"></loading>
       <div class="current-weather flex justify-between items-center px-3 py-4">
         <div class="flex flex-row items-center">
           <div class="text-4xl font-semibold">
-            {{ currently.temperature }}°C
+            {{ Math.round(currently.temperature) }}°C
           </div>
 
           <div class="mx-5">
@@ -41,9 +37,7 @@
           ></canvas>
         </div>
       </div>
-      <div
-        class="future-weather text-sm bg-purple-700 px-6 py-8 overflow-hidden"
-      >
+      <div class="future-weather text-sm px-6 py-8 overflow-hidden">
         <div
           v-for="(day, index) in futureDailyFiveInfo"
           :key="day.time"
@@ -74,18 +68,23 @@
 
 <script>
 import skycons from "skycons";
+import Loading from "./Loading";
+
 const SkyconsClass = skycons(window);
 
 export default {
+  components: { Loading },
+
   data() {
     return {
       currently: {
         time: null,
-        temperature: "--",
+        temperature: 0,
         summary: "--"
       },
       address: "--",
-      futureDailyFiveInfo: []
+      futureDailyFiveInfo: [],
+      loading: true
     };
   },
 
@@ -96,8 +95,7 @@ export default {
 
   filters: {
     transToWeekDay(time) {
-      if (!time) return "--";
-      const newDate = new Date(time * 1000);
+      const newDate = time ? new Date(time * 1000) : new Date();
       const days = ["周日", "周一", "周二", "周三", "周四", "周五", "周六"];
       return days[newDate.getDay()];
     }
@@ -150,6 +148,7 @@ export default {
     },
 
     async fetchWeatherInfo(lat, lng) {
+      this.loading = true;
       try {
         const {
           data: {
@@ -172,6 +171,8 @@ export default {
         });
       } catch (e) {
         console.error(e);
+      } finally {
+        this.loading = false;
       }
     }
   },
@@ -184,4 +185,12 @@ export default {
 </script>
 
 <style>
+@media (max-width: 640px) {
+  .weather {
+    width: 90% !important;
+  }
+}
+.weather-container {
+  min-height: 62vh;
+}
 </style>

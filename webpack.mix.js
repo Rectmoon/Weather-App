@@ -11,8 +11,8 @@ const mix = require("laravel-mix");
  |
  */
 
-mix.js("resources/js/app.js", "public/js").postCss(
-    "resources/css/style.css",
-    "public/css",
-    [require("tailwindcss")]
-);
+console.log(process.env.NODE_ENV);
+
+mix.js("resources/js/app.js", "public/js")
+    .postCss("resources/css/style.css", "public/css", [require("tailwindcss")])
+    .extract(["vue"]);
